@@ -1,7 +1,12 @@
 import './App.css';
+import PersonsTable from './components/PersonsTable/PersonsTable';
 
 function App() {
-	return <div>Hello World!</div>;
+	return (
+		<>
+			<PersonsTable />
+		</>
+	);
 }
 
 export default App;
