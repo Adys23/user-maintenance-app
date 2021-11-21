@@ -25,7 +25,7 @@ const PersonsTable = () => {
 		{
 			field: 'email',
 			headerName: 'E-mail address',
-			width: 120,
+			flex: 1,
 		},
 		{
 			field: 'phone',
@@ -56,7 +56,8 @@ const PersonsTable = () => {
 		{
 			field: 'action',
 			headerName: 'Action buttons',
-			width: 200,
+			flex: 1,
+			minWidth: 300,
 			renderCell: ActionButtonsGroup,
 			sortable: false,
 		},
@@ -74,7 +75,14 @@ const PersonsTable = () => {
 		{ id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
 		{ id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
 		{ id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-		{ id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+		{
+			id: 5,
+			lastName: 'Targaryen',
+			firstName: 'Daenerys',
+			age: null,
+			gender: 'female',
+			address: 'Dragonstone',
+		},
 		{ id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
 		{ id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
 		{ id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
