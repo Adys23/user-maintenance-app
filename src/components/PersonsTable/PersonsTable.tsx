@@ -1,6 +1,6 @@
-import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
-import React from 'react';
-import ActionButtonsGroup from '../ActionButtonsGroup';
+import { DataGrid } from '@mui/x-data-grid';
+
+import ActionButtonsGroup from './ActionButtonsGroup';
 
 const PersonsTable = () => {
 	const columns = [
@@ -40,7 +40,7 @@ const PersonsTable = () => {
 		{
 			field: 'hobbys',
 			headerName: 'Hobbys',
-			width: 120,
+			width: 300,
 		},
 		{
 			field: 'fullName',
@@ -58,7 +58,7 @@ const PersonsTable = () => {
 			headerName: 'Action buttons',
 			width: 200,
 			renderCell: ActionButtonsGroup,
-			isColumnSelectable: false,
+			sortable: false,
 		},
 	];
 
@@ -68,6 +68,8 @@ const PersonsTable = () => {
 			lastName: 'Snow',
 			firstName: 'Jon',
 			age: 35,
+			email: 'jon.snow@houseStark.com',
+			hobbys: ['Full Body Workout', 'Martial Arts'],
 		},
 		{ id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
 		{ id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
@@ -80,20 +82,20 @@ const PersonsTable = () => {
 	];
 
 	return (
-		<div style={{ height: 800, width: '100%' }}>
+		<div style={{ height: 500, width: '100%' }}>
 			<DataGrid
 				rows={rows}
 				columns={columns}
 				pageSize={7}
 				rowsPerPageOptions={[7]}
 				checkboxSelection
-				onCellClick={(
-					params: GridCellParams,
-					event: MuiEvent<React.MouseEvent>
-				) => {
+				onCellClick={(params, event) => {
 					if (params.colDef.field === 'action') {
 						event.defaultMuiPrevented = true;
 					}
+				}}
+				onRowClick={(params, event) => {
+					event.defaultMuiPrevented = true;
 				}}
 			/>
 		</div>
