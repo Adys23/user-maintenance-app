@@ -4,7 +4,6 @@ import ActionButtonsGroup from './ActionButtonsGroup';
 
 const PersonsTable = () => {
 	const columns = [
-		{ field: 'id', headerName: 'ID', width: 70 },
 		{ field: 'firstName', headerName: 'First name', width: 130 },
 		{ field: 'lastName', headerName: 'Last name', width: 130 },
 		{
@@ -38,8 +37,8 @@ const PersonsTable = () => {
 			width: 120,
 		},
 		{
-			field: 'hobbys',
-			headerName: 'Hobbys',
+			field: 'hobbies',
+			headerName: 'Hobbies',
 			width: 300,
 		},
 		{
@@ -70,7 +69,7 @@ const PersonsTable = () => {
 			firstName: 'Jon',
 			age: 35,
 			email: 'jon.snow@houseStark.com',
-			hobbys: ['Full Body Workout', 'Martial Arts'],
+			hobbies: ['Full Body Workout', 'Martial Arts'],
 		},
 		{ id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
 		{ id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
