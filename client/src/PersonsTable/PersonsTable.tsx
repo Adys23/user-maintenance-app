@@ -23,37 +23,39 @@ const PersonsTable = () => {
 		{
 			field: 'gender',
 			headerName: 'Gender',
-			width: 120,
+			width: 80,
 		},
 		{
 			field: 'dateOfBirth',
 			headerName: 'Birth date',
-			width: 120,
+			width: 100,
 		},
 		{
 			field: 'age',
 			headerName: 'Age',
-			width: 120,
+			width: 60,
 		},
 		{
 			field: 'email',
 			headerName: 'E-mail address',
 			flex: 1,
+			minWidth: 300,
 		},
 		{
 			field: 'phoneNumber',
 			headerName: 'Phone number',
-			width: 120,
+			width: 180,
 		},
 		{
 			field: 'address',
 			headerName: 'Address',
-			width: 120,
+			width: 400,
 		},
 		{
 			field: 'hobbies',
 			headerName: 'Hobbies',
-			width: 300,
+			flex: 2,
+			minWidth: 400,
 		},
 		{
 			field: 'fullName',
@@ -81,19 +83,18 @@ const PersonsTable = () => {
 	const usersList = useAppSelector((state) => state.users.usersList);
 
 	const updatedUsersList = usersList.map((user) => {
-		let hobbiesString: string = '';
+		let hobbiesString = '';
 
-		user.hobbies.forEach((hobby) => (hobbiesString += hobby.name));
+		user.hobbies.forEach((hobby) => (hobbiesString += `${hobby.name}, `));
+		hobbiesString = hobbiesString.slice(0, -2);
 		let newUser: NewUser = { ...user, hobbies: hobbiesString };
 		return newUser;
 	});
 
-	console.log(updatedUsersList);
-
 	return (
 		<div style={{ height: 500, width: '100%' }}>
 			<DataGrid
-				rows={usersList}
+				rows={updatedUsersList}
 				columns={columns}
 				pageSize={7}
 				rowsPerPageOptions={[7]}
