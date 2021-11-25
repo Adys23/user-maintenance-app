@@ -15,4 +15,8 @@ export class UserRepository {
     public deleteUser(id: string): void {
         this.collection.findAndUpdate((user: User) => user.id === id, (user: User & LokiObj) => user.deleted = true)
     }
+
+    public restoreUser(id: string): void {
+        this.collection.findAndUpdate((user: User) => user.id === id, (user: User & LokiObj) => user.deleted = false)
+    }
 }

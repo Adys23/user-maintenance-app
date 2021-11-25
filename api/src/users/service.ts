@@ -31,4 +31,12 @@ export default class UserService {
             }
         });
     }
+
+    public deleteUser(id: string): void {
+        this.userRepository.deleteUser(id);
+    }
+
+    public restoreUser(id: string): void {
+        this.userRepository.restoreUser(id);
+    }
 }

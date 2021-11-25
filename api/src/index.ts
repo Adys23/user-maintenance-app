@@ -24,6 +24,8 @@ app.get("/", (req: Request, res: Response) => {
 app.get('/hobby', hobbyController.getHobbies.bind(hobbyController));
 
 app.get('/user', userController.getUsers.bind(userController));
+app.delete('/user/:userId', userController.deleteUser.bind(userController));
+app.post('/user/restore/:userId', userController.restoreUser.bind(userController))
 
 
 // start the Express api
