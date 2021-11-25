@@ -1,8 +1,18 @@
 .navbar {
+	height: 40px;
+	margin-bottom: 1rem;
 	display: flex;
 	justify-content: space-between;
 }
 
 .navbar div {
-	margin: 1rem;
+	display: flex;
+}
+.navbar h1 {
+	margin: 0px;
+}
+
+.navbar img {
+	max-height: 100%;
+	max-width: 100%;
 }

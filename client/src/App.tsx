@@ -9,12 +9,8 @@ function App() {
 		<>
 			<Navbar />
 			<Switch>
-				<Route path={'/'} exact>
-					<PersonsTable />
-				</Route>
-				<Route path={'/:fullName'}>
-					<PersonDetailsForm />
-				</Route>
+				<Route path={'/'} exact component={PersonsTable} />
+				<Route path={'/user/:userId'} component={PersonDetailsForm} />
 			</Switch>
 			<Footer />
 		</>

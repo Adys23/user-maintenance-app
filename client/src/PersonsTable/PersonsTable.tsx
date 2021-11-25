@@ -1,22 +1,50 @@
-import { DataGrid } from '@mui/x-data-grid';
-import { useAppSelector } from '../hooks/hooks';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
+import { ReactNode, useEffect, useState } from 'react';
+//import { useAppSelector } from '../hooks/hooks';
+import { getUsersList, deleteSingleUser } from '../services/http-service';
+import { Hobby, User, TableUser } from '../types/types';
 
 import ActionButtonsGroup from './ActionButtonsGroup';
 
-interface NewUser {
-	id: string;
-	name: string;
-	lastName: string;
-	email: string;
-	age: number;
-	gender: string;
-	phoneNumber: string;
-	address: string;
-	dateOfBirth: string;
-	hobbies: string;
-}
+const PersonsTable: React.FC = () => {
+	const [usersList, setUsersList] = useState<TableUser[]>([]);
 
-const PersonsTable = () => {
+	const stringifyHobbies = (hobbies: Hobby[]): string => {
+		const hobbiesString: string = hobbies
+			.reduce((acc: string, value: Hobby) => {
+				acc += `${value.name}, `;
+				return acc;
+			}, '')
+			.slice(0, -2);
+		return hobbiesString;
+	};
+
+	const deleteUserHandler = async (userId: string): Promise<void> => {
+		const response: boolean | undefined = await deleteSingleUser(userId);
+		if (response) {
+			const updatedUsersList: TableUser[] = usersList.filter(
+				(item: TableUser) => item.id !== userId
+			);
+			setUsersList(updatedUsersList);
+		}
+	};
+
+	useEffect(() => {
+		getUsersList().then((data: User[] | undefined):void => {
+			if (data) {
+				const tableUsersList: TableUser[] = data.map(
+					(user: User): TableUser => {
+						const hobbiesString: string = stringifyHobbies(user.hobbies);
+
+						const tableUser: TableUser = { ...user, hobbies: hobbiesString };
+						return tableUser;
+					}
+				);
+				setUsersList(tableUsersList);
+			}
+		});
+	}, []);
+
 	const columns = [
 		{ field: 'name', headerName: 'First name', width: 130 },
 		{ field: 'lastName', headerName: 'Last name', width: 130 },
@@ -73,31 +101,25 @@ const PersonsTable = () => {
 			headerName: 'Action buttons',
 			flex: 1,
 			minWidth: 300,
-			renderCell: () => {
-				return <ActionButtonsGroup />;
+			renderCell: (params: GridRenderCellParams): ReactNode => {
+				return (
+					<ActionButtonsGroup
+						userId={params.id}
+						deleteUser={deleteUserHandler}
+					/>
+				);
 			},
 			sortable: false,
 		},
 	];
 
-	const usersList = useAppSelector((state) => state.users.usersList);
-
-	const updatedUsersList = usersList.map((user) => {
-		let hobbiesString = '';
-
-		user.hobbies.forEach((hobby) => (hobbiesString += `${hobby.name}, `));
-		hobbiesString = hobbiesString.slice(0, -2);
-		let newUser: NewUser = { ...user, hobbies: hobbiesString };
-		return newUser;
-	});
-
 	return (
 		<div style={{ height: 500, width: '100%' }}>
 			<DataGrid
-				rows={updatedUsersList}
+				rows={usersList}
 				columns={columns}
-				pageSize={7}
-				rowsPerPageOptions={[7]}
+				pageSize={10}
+				rowsPerPageOptions={[10]}
 				checkboxSelection
 				onCellClick={(params, event) => {
 					if (params.colDef.field === 'action') {
