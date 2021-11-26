@@ -16,19 +16,22 @@ const db: Database = new Database();
 const hobbyController: HobbyController = new HobbyController(db.getHobbies());
 const userController: UserController = new UserController(db.getUsers(), db.getHobbies())
 
-// define a route handler for the default home page
-app.get("/", (req: Request, res: Response) => {
-    res.send("Hello world!");
+app.get("/", (req: Request, res: Response): void => {
+    res.send("Welcome to the users and hobbies api!");
 });
 
 app.get('/hobby', hobbyController.getHobbies.bind(hobbyController));
 
 app.get('/user', userController.getUsers.bind(userController));
+app.get('/user/:userId', userController.getUser.bind(userController));
+
 app.delete('/user/:userId', userController.deleteUser.bind(userController));
-app.post('/user/restore/:userId', userController.restoreUser.bind(userController))
+app.delete('/user', userController.deleteUsers.bind(userController))
+
+app.post('/user/restore/:userId', userController.restoreUser.bind(userController));
+app.post('/user/restore', userController.restoreUsers.bind(userController))
+
+app.post('/user/:userId', userController.editUser.bind(userController));
 
 
-// start the Express api
-app.listen(port, () => {
-    // console.log( `api started at http://localhost:${ port }` );
-});
+app.listen(port);

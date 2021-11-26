@@ -9,7 +9,7 @@ export default class HobbyController {
         this.service = new HobbyService(collection);
     }
 
-    public getHobbies(request: Request, response: Response) {
+    public getHobbies(request: Request, response: Response): void {
         response.json(this.service.getHobbies());
     }
 }

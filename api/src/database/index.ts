@@ -1,12 +1,12 @@
 import loki from 'lokijs';
-import {Hobby, User, UserFromSource} from '../types';
+import {Hobby, UserEntity, User} from '../types';
 import usersData from '../../resources/users.json'
 import hobbiesData from '../../resources/hobbies.json'
 
 export default class Database {
 
     private db: Loki;
-    private readonly users: Collection<User>;
+    private readonly users: Collection<UserEntity>;
     private readonly hobbies: Collection<Hobby>
 
     constructor() {
@@ -18,7 +18,7 @@ export default class Database {
         this.loadData();
     }
 
-    public getUsers(): Collection<User> {
+    public getUsers(): Collection<UserEntity> {
         return this.users;
     }
 
@@ -27,7 +27,7 @@ export default class Database {
     }
 
     private loadData(): void {
-        const users: User[] = usersData.map((user: UserFromSource) => ({...user, deleted: false}));
+        const users: UserEntity[] = usersData.map((user: User) => ({...user, deleted: false}));
         const hobbies: Hobby[] = hobbiesData;
         this.users.insert(users);
         this.hobbies.insert(hobbies);

@@ -1,4 +1,4 @@
-export interface UserFromSource {
+export interface User {
     id: string;
     name: string;
     lastName: string;
@@ -11,11 +11,11 @@ export interface UserFromSource {
     hobbies: string[];
 }
 
-export interface User extends UserFromSource {
+export interface UserEntity extends User {
     deleted: boolean;
 }
 
-export interface UserDTO extends Omit<UserFromSource, 'hobbies'> {
+export interface UserDTO extends Omit<User, 'hobbies'> {
     hobbies: Hobby[]
 }
 
