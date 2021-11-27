@@ -2,8 +2,8 @@ import ActionButtonsGroup from './ActionButtonsGroup';
 import { GridRenderCellParams } from '@mui/x-data-grid';
 import { ReactNode } from 'react';
 
-export const getColumns = (deleteUserHandler: (userId: string) => Promise<void>) => {
-    return [
+export const getColumns = (deleteButtonHandler: (selectedUserIds: string[]) => void) => {
+	return [
 		{ field: 'name', headerName: 'First name', width: 130 },
 		{ field: 'lastName', headerName: 'Last name', width: 130 },
 		{
@@ -63,13 +63,13 @@ export const getColumns = (deleteUserHandler: (userId: string) => Promise<void>)
 				return (
 					<ActionButtonsGroup
 						userId={params.id}
-						deleteUser={deleteUserHandler}
+						deleteUser={deleteButtonHandler}
 					/>
 				);
 			},
 			sortable: false,
 		},
 	];
-}
+};
 
 export default getColumns;

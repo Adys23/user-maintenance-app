@@ -58,3 +58,17 @@ export const deleteSingleUser = async (
 		return false;
 	}
 };
+
+export const deleteUsers = async (
+	userIds: string[]
+): Promise<boolean | undefined> => {
+	try {
+		const response: AxiosResponse = await axiosInstance.delete(
+			'/user', {data: userIds}
+		);
+		return 200 <= response.status && 300 > response.status;
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+};

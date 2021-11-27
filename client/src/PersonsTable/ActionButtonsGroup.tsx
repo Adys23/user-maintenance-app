@@ -6,12 +6,12 @@ import { Link } from 'react-router-dom';
 
 interface Props {
 	userId: string;
-	deleteUser: (userId: string) => void;
+	deleteUser: (userIds: string[]) => void;
 }
 
 const ActionButtonsGroup: React.FC<any> = ({ userId, deleteUser }: Props) => {
 	const deleteUserHandler = (): void => {
-		deleteUser(userId);
+		deleteUser([userId]);
 	};
 
 	return (

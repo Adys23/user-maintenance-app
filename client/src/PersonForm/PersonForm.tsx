@@ -5,7 +5,9 @@ import React, {
 	ChangeEventHandler,
 	ChangeEvent,
 	SyntheticEvent,
+	useState,
 } from 'react';
+import Modal from '../components/Modal/Modal';
 import { User, Hobby } from '../types/types';
 import {
 	Box,
@@ -43,6 +45,7 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const [modalOpen, setmodalOpen] = useState<boolean>(false);
 
 	const userId = location.state.userId;
 
@@ -96,6 +99,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 
 	const deleteUserHandler = (): void => {
 		deleteSingleUser(state.user.id);
+		toggleModal();
 	};
 
 	const updateUserHandler = (): void => {
@@ -117,6 +121,10 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 			state.user.hobbies,
 		]
 	);
+
+	const toggleModal = () => {
+		setmodalOpen(!modalOpen);
+	};
 
 	return (
 		<>
@@ -235,12 +243,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 				>
 					Save changes
 				</Button>
-				<Button
-					variant='contained'
-					onClick={deleteUserHandler}
-					component={Link}
-					to={'/'}
-				>
+				<Button variant='contained' onClick={toggleModal}>
 					Delete user
 				</Button>
 				<Button variant='contained' onClick={cancelChangesHandler}>
@@ -250,6 +253,14 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 					Back to list
 				</Button>
 			</Stack>
+			<Modal
+				open={modalOpen}
+				onConfirm={deleteUserHandler}
+				onCancel={toggleModal}
+				title='Delete user?'
+				text={`Are you sure you want to delete user: ${state.user.name} ${state.user.lastName}?`}
+				navigateTo='/'
+			/>
 		</>
 	);
 };

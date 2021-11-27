@@ -10,9 +10,6 @@ const Navbar = () => {
 			</div>
 			<Stack spacing={1} direction='row'>
 				<Button variant='contained' disabled={false}>
-					Bulk delete
-				</Button>
-				<Button variant='contained' disabled={false}>
 					Cancel last changes
 				</Button>
 			</Stack>
