@@ -1,4 +1,4 @@
-import {Reducer} from 'react'
+import { Reducer } from 'react';
 import { User, Hobby } from '../types/types';
 
 export interface State {
@@ -8,43 +8,61 @@ export interface State {
 }
 
 export enum ActionType {
-	ADD_HOBBIES, 
+	SET_HOBBIES,
+	RESTORE_USER,
 	UPDATE_USER,
-	INITIALIZE_USER
+	INITIALIZE_USER,
 }
 
-export type AddHobbiesAction = {
-	type: ActionType;
+export type SetHobbiesAction = {
+	type: ActionType.SET_HOBBIES;
 	data: Hobby[];
 };
 
-export type UpdateUserAction = {
-	type: ActionType;
-    key: keyof User;
-	value: string | number;
+export type RestoreUserAction = {
+	type: ActionType.RESTORE_USER;
 };
 
-export type AddUserAction = {
-    type: ActionType;
-    data: User;
-}
+export type UpdateUserAction = {
+	type: ActionType.UPDATE_USER;
+	key: keyof User;
+	value: string | number | Array<Hobby>;
+};
 
-type Action = AddHobbiesAction | UpdateUserAction | AddUserAction;
+export type SetUserAction = {
+	type: ActionType;
+	data: User;
+};
+
+type Action =
+	| SetHobbiesAction
+	| UpdateUserAction
+	| SetUserAction
+	| RestoreUserAction;
 
 export const reducer: Reducer<State, Action> = (
 	state: State,
 	action: Action
 ) => {
 	switch (action.type) {
-		case ActionType.ADD_HOBBIES:
-			return { ...state, hobbies: (action as AddHobbiesAction).data };
+		case ActionType.SET_HOBBIES:
+			return { ...state, hobbies: (action as SetHobbiesAction).data };
+		case ActionType.RESTORE_USER:
+			return { ...state, user: state.initialUser };
 		case ActionType.UPDATE_USER:
-			return { ...state, user: {...state.user, [(action as UpdateUserAction).key]: (action as UpdateUserAction).value }};
+			return {
+				...state,
+				user: {
+					...state.user,
+					[(action as UpdateUserAction).key]: (action as UpdateUserAction)
+						.value,
+				},
+			};
 		case ActionType.INITIALIZE_USER:
 			return {
 				...state,
-				initialUser: (action as AddUserAction).data,
-				user: (action as AddUserAction).data,
+				initialUser: (action as SetUserAction).data,
+				user: (action as SetUserAction).data,
 			};
 		default:
 			return state;
@@ -64,4 +82,8 @@ const defaultUser: User = {
 	hobbies: [],
 };
 
- export const initialState: State = { user: defaultUser, initialUser: defaultUser, hobbies: [] };
+export const initialState: State = {
+	user: defaultUser,
+	initialUser: defaultUser,
+	hobbies: [],
+};

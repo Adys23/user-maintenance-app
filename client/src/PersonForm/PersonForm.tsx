@@ -1,8 +1,10 @@
 import React, {
 	useEffect,
 	useReducer,
+	useCallback,
 	ChangeEventHandler,
 	ChangeEvent,
+	SyntheticEvent,
 } from 'react';
 import { User, Hobby } from '../types/types';
 import {
@@ -16,14 +18,20 @@ import {
 import { Link } from 'react-router-dom';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { getSingleUser, getHobbiesList } from '../services/http-service';
+import {
+	getSingleUser,
+	getHobbiesList,
+	deleteSingleUser,
+	updateUser,
+} from '../services/http-service';
 import {
 	reducer,
 	initialState,
 	ActionType,
-	AddHobbiesAction,
+	SetHobbiesAction,
 	UpdateUserAction,
-	AddUserAction,
+	SetUserAction,
+	RestoreUserAction,
 } from './personFormReducer';
 
 interface Props {
@@ -33,7 +41,7 @@ interface Props {
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
-const PersonForm: React.FC<any> = ({ location }: Props) => {
+const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	const userId = location.state.userId;
@@ -41,7 +49,7 @@ const PersonForm: React.FC<any> = ({ location }: Props) => {
 	useEffect((): void => {
 		getHobbiesList().then((data: Hobby[] | undefined): void => {
 			if (data) {
-				const action: AddHobbiesAction = { type: ActionType.ADD_HOBBIES, data };
+				const action: SetHobbiesAction = { type: ActionType.SET_HOBBIES, data };
 				dispatch(action);
 			}
 		});
@@ -50,7 +58,7 @@ const PersonForm: React.FC<any> = ({ location }: Props) => {
 	useEffect((): void => {
 		getSingleUser(userId).then((data: User | undefined): void => {
 			if (data) {
-				const action: AddUserAction = {
+				const action: SetUserAction = {
 					type: ActionType.INITIALIZE_USER,
 					data,
 				};
@@ -70,6 +78,46 @@ const PersonForm: React.FC<any> = ({ location }: Props) => {
 			dispatch(action);
 		};
 
+	const onSelectValueChange =
+		(key: keyof User) =>
+		(event: SyntheticEvent, value: Hobby[]): void => {
+			const action: UpdateUserAction = {
+				type: ActionType.UPDATE_USER,
+				key,
+				value,
+			};
+			dispatch(action);
+		};
+
+	const cancelChangesHandler = (): void => {
+		const action: RestoreUserAction = { type: ActionType.RESTORE_USER };
+		dispatch(action);
+	};
+
+	const deleteUserHandler = (): void => {
+		deleteSingleUser(state.user.id);
+	};
+
+	const updateUserHandler = (): void => {
+		updateUser(state.user);
+	};
+
+	const isValid = useCallback(
+		(): boolean =>
+			!!state.user.name.length &&
+			!!state.user.lastName.length &&
+			!!state.user.email.length &&
+			state.user.age >= 0 &&
+			!!state.user.hobbies.length,
+		[
+			state.user.name,
+			state.user.lastName,
+			state.user.email,
+			state.user.age,
+			state.user.hobbies,
+		]
+	);
+
 	return (
 		<>
 			<Box
@@ -82,21 +130,22 @@ const PersonForm: React.FC<any> = ({ location }: Props) => {
 				<TextField
 					required
 					id='name'
-					name='First Name'
+					label='First Name'
 					value={state.user.name}
 					onChange={onInputValueChange('name')}
+					error={!state.user.name.length}
 				/>
 				<TextField
 					required
 					id='lastName'
-					name='Last Name'
+					label='Last Name'
 					value={state.user.lastName}
 					onChange={onInputValueChange('lastName')}
+					error={!state.user.lastName.length}
 				/>
 				<TextField
-					required
 					id='gender'
-					name='Gender'
+					label='Gender'
 					value={state.user.gender}
 					onChange={onInputValueChange('gender')}
 				/>
@@ -104,31 +153,42 @@ const PersonForm: React.FC<any> = ({ location }: Props) => {
 					id='dateOfBirth'
 					label='Birth date'
 					type='date'
-					defaultValue={state.user ? state.user.dateOfBirth : ''}
+					value={state.user.dateOfBirth}
+					onChange={onInputValueChange('dateOfBirth')}
 					sx={{ width: 220 }}
 					InputLabelProps={{
 						shrink: true,
 					}}
 				/>
-				<TextField id='age' label='Age' type='number' value={state.user.age} />
+				<TextField
+					id='age'
+					label='Age'
+					type='number'
+					value={state.user.age}
+					onChange={onInputValueChange('age')}
+					required
+					error={state.user.age < 0}
+				/>
 				<TextField
 					required
 					id='email'
-					name='E-mail Address'
+					label='E-mail Address'
 					type='email'
 					value={state.user.email}
+					onChange={onInputValueChange('email')}
+					error={!state.user.email.length}
 				/>
 				<TextField
-					required
 					id='phoneNumber'
-					name='Phone number'
+					label='Phone number'
 					value={state.user.phoneNumber}
+					onChange={onInputValueChange('phoneNumber')}
 				/>
 				<TextField
-					required
 					id='address'
-					name='Address'
+					label='Address'
 					value={state.user.address}
+					onChange={onInputValueChange('address')}
 				/>
 				<Autocomplete
 					multiple
@@ -154,18 +214,40 @@ const PersonForm: React.FC<any> = ({ location }: Props) => {
 					renderInput={(params) => (
 						<TextField
 							{...params}
+							required
 							label='Hobbies'
-							placeholder='Select Hobbies'
+							placeholder={state.user.hobbies.length ? '' : 'Select Hobbies'}
+							error={!state.user.hobbies.length}
 						/>
 					)}
 					defaultValue={state.user.hobbies}
+					value={state.user.hobbies}
+					onChange={onSelectValueChange('hobbies')}
 				/>
 			</Box>
 			<Stack spacing={1} direction='row'>
-				<Button variant='contained'>Confirm changes</Button>
-				<Button variant='contained'>Delete user</Button>
+				<Button
+					disabled={!isValid()}
+					variant='contained'
+					onClick={updateUserHandler}
+					component={Link}
+					to={'/'}
+				>
+					Save changes
+				</Button>
+				<Button
+					variant='contained'
+					onClick={deleteUserHandler}
+					component={Link}
+					to={'/'}
+				>
+					Delete user
+				</Button>
+				<Button variant='contained' onClick={cancelChangesHandler}>
+					Cancel changes
+				</Button>
 				<Button variant='contained' component={Link} to={'/'}>
-					Cancel
+					Back to list
 				</Button>
 			</Stack>
 		</>

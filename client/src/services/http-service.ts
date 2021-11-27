@@ -37,6 +37,14 @@ export const getSingleUser = async (
 	}
 };
 
+export const updateUser = async (user: User): Promise<void | undefined> => {
+	try {
+		await axiosInstance.post(`/user/${user.id}`, user);
+	} catch (error) {
+		console.error(error);
+	}
+};
+
 export const deleteSingleUser = async (
 	userId: string
 ): Promise<boolean | undefined> => {

@@ -27,6 +27,8 @@ const PersonsTable: React.FC = () => {
 		}
 	};
 
+	
+
 	useEffect(() => {
 		getUsersList().then((data: User[] | undefined):void => {
 			if (data) {
