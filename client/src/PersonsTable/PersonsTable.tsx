@@ -1,10 +1,8 @@
-import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
-import { ReactNode, useEffect, useState } from 'react';
-//import { useAppSelector } from '../hooks/hooks';
+import { DataGrid } from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
 import { getUsersList, deleteSingleUser } from '../services/http-service';
 import { Hobby, User, TableUser } from '../types/types';
-
-import ActionButtonsGroup from './ActionButtonsGroup';
+import getColumns from './tableColumns';
 
 const PersonsTable: React.FC = () => {
 	const [usersList, setUsersList] = useState<TableUser[]>([]);
@@ -45,73 +43,7 @@ const PersonsTable: React.FC = () => {
 		});
 	}, []);
 
-	const columns = [
-		{ field: 'name', headerName: 'First name', width: 130 },
-		{ field: 'lastName', headerName: 'Last name', width: 130 },
-		{
-			field: 'gender',
-			headerName: 'Gender',
-			width: 80,
-		},
-		{
-			field: 'dateOfBirth',
-			headerName: 'Birth date',
-			width: 100,
-		},
-		{
-			field: 'age',
-			headerName: 'Age',
-			width: 60,
-		},
-		{
-			field: 'email',
-			headerName: 'E-mail address',
-			flex: 1,
-			minWidth: 300,
-		},
-		{
-			field: 'phoneNumber',
-			headerName: 'Phone number',
-			width: 180,
-		},
-		{
-			field: 'address',
-			headerName: 'Address',
-			width: 400,
-		},
-		{
-			field: 'hobbies',
-			headerName: 'Hobbies',
-			flex: 2,
-			minWidth: 400,
-		},
-		{
-			field: 'fullName',
-			headerName: 'Full name',
-			description: 'This column has a value getter and is not sortable.',
-			sortable: false,
-			width: 160,
-			valueGetter: (params: any) =>
-				`${params.getValue(params.id, 'name') || ''} ${
-					params.getValue(params.id, 'lastName') || ''
-				}`,
-		},
-		{
-			field: 'action',
-			headerName: 'Action buttons',
-			flex: 1,
-			minWidth: 300,
-			renderCell: (params: GridRenderCellParams): ReactNode => {
-				return (
-					<ActionButtonsGroup
-						userId={params.id}
-						deleteUser={deleteUserHandler}
-					/>
-				);
-			},
-			sortable: false,
-		},
-	];
+	const columns = getColumns(deleteUserHandler);
 
 	return (
 		<div style={{ height: 500, width: '100%' }}>

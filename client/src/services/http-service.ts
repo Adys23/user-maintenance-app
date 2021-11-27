@@ -17,16 +17,20 @@ export const getUsersList = async (): Promise<User[] | undefined> => {
 
 export const getHobbiesList = async (): Promise<Hobby[] | undefined> => {
 	try {
-		const response: AxiosResponse<Hobby[]> = await axiosInstance.get('/hobbies');
+		const response: AxiosResponse<Hobby[]> = await axiosInstance.get('/hobby');
 		return response.data;
 	} catch (error) {
 		console.error(error);
 	}
 };
 
-export const getSingleUser = async (userId:string): Promise<User | undefined> => {
+export const getSingleUser = async (
+	userId: string
+): Promise<User | undefined> => {
 	try {
-		const response: AxiosResponse<User> = await axiosInstance.get(`/user/${userId}`);
+		const response: AxiosResponse<User> = await axiosInstance.get(
+			`/user/${userId}`
+		);
 		return response.data;
 	} catch (error) {
 		console.error(error);
