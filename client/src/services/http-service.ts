@@ -63,9 +63,19 @@ export const deleteUsers = async (
 	userIds: string[]
 ): Promise<boolean | undefined> => {
 	try {
-		const response: AxiosResponse = await axiosInstance.delete(
-			'/user', {data: userIds}
-		);
+		const response: AxiosResponse = await axiosInstance.delete('/user', {
+			data: userIds,
+		});
+		return 200 <= response.status && 300 > response.status;
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+};
+
+export const restoreUsers = async (): Promise<boolean | undefined> => {
+	try {
+		const response: AxiosResponse = await axiosInstance.post('/user/restore');
 		return 200 <= response.status && 300 > response.status;
 	} catch (error) {
 		console.log(error);
