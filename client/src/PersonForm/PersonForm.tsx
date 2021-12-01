@@ -6,8 +6,11 @@ import React, {
 	ChangeEvent,
 	SyntheticEvent,
 	useState,
+	useContext,
 } from 'react';
 import Modal from '../components/Modal/Modal';
+import Toast from '../components/Toast/Toast';
+import { ToastContext } from '../context/ToastContext';
 import { User, Hobby } from '../types/types';
 import {
 	Box,
@@ -45,8 +48,7 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
-	const [modalOpen, setmodalOpen] = useState<boolean>(false);
-
+	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const userId = location.state.userId;
 
 	useEffect((): void => {
@@ -69,6 +71,8 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 			}
 		});
 	}, [userId]);
+
+	const toastCtx = useContext(ToastContext);
 
 	const onInputValueChange =
 		(key: keyof User): ChangeEventHandler<HTMLInputElement> =>
@@ -99,7 +103,9 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 
 	const deleteUserHandler = (): void => {
 		deleteSingleUser(state.user.id);
+		toastCtx.setDeletedUserId(state.user.id);
 		toggleModal();
+		toastCtx.toggleToast();
 	};
 
 	const updateUserHandler = (): void => {
@@ -122,8 +128,8 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 		]
 	);
 
-	const toggleModal = () => {
-		setmodalOpen(!modalOpen);
+	const toggleModal = (): void => {
+		setModalOpen(!modalOpen);
 	};
 
 	return (
@@ -260,6 +266,13 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 				title='Delete user?'
 				text={`Are you sure you want to delete user: ${state.user.name} ${state.user.lastName}?`}
 				navigateTo='/'
+			/>
+			<Toast
+				open={toastCtx.toastOpen}
+				closeHandler={toastCtx.toggleToast}
+				actionHandler={toastCtx.restoreUserHandler}
+				alertType={toastCtx.alert.alertType}
+				text={toastCtx.alert.alertText}
 			/>
 		</>
 	);
