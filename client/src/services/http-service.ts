@@ -78,8 +78,9 @@ export const restoreUser = async (
 ): Promise<boolean | undefined> => {
 	try {
 		const response: AxiosResponse = await axiosInstance.post(
-			`/user/restore/${deletedUserId}`
+			`/user/restore/:${deletedUserId}`
 		);
+		console.log(response.status);
 		return 200 <= response.status && 300 > response.status;
 	} catch (error) {
 		console.log(error);

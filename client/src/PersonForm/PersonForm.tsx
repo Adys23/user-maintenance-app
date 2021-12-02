@@ -105,6 +105,10 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 		deleteSingleUser(state.user.id);
 		toastCtx.setDeletedUserId(state.user.id);
 		toggleModal();
+		toastCtx.setAlert({
+			alertType: 'warning',
+			alertText: 'User has been deleted!',
+		});
 		toastCtx.toggleToast();
 	};
 

@@ -1,12 +1,14 @@
 import React, { createContext, useState } from 'react';
 import { AlertColor } from '@mui/material';
-import { restoreUser } from '../services/http-service';
+import { restoreUsers } from '../services/http-service';
 
 interface ToastContextType {
 	toastOpen: boolean;
 	alert: { alertType: AlertColor; alertText: string };
 	toggleToast: () => void;
-	setAlert: React.Dispatch<React.SetStateAction<{alertType: AlertColor, alertText: string}>>;
+	setAlert: React.Dispatch<
+		React.SetStateAction<{ alertType: AlertColor; alertText: string }>
+	>;
 	restoreUserHandler: () => void;
 	setDeletedUserId: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -33,7 +35,7 @@ const CtxProvider: React.FC = (props) => {
 	};
 
 	const restoreUserHandler = () => {
-		restoreUser(deletedUserId);
+		restoreUsers();
 	};
 
 	return (

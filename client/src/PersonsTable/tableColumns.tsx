@@ -1,8 +1,10 @@
 import ActionButtonsGroup from './ActionButtonsGroup';
-import { GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColumns, GridRenderCellParams } from '@mui/x-data-grid';
 import { ReactNode } from 'react';
 
-export const getColumns = (deleteButtonHandler: (selectedUserIds: string[]) => void) => {
+export const getColumns = (
+	deleteButtonHandler: (selectedUserIds: string[]) => void
+): GridColumns => {
 	return [
 		{ field: 'name', headerName: 'First name', width: 130 },
 		{ field: 'lastName', headerName: 'Last name', width: 130 },
@@ -19,13 +21,12 @@ export const getColumns = (deleteButtonHandler: (selectedUserIds: string[]) => v
 		{
 			field: 'age',
 			headerName: 'Age',
-			width: 60,
+			width: 80,
 		},
 		{
 			field: 'email',
 			headerName: 'E-mail address',
-			flex: 1,
-			minWidth: 300,
+			minWidth: 270,
 		},
 		{
 			field: 'phoneNumber',
@@ -35,13 +36,16 @@ export const getColumns = (deleteButtonHandler: (selectedUserIds: string[]) => v
 		{
 			field: 'address',
 			headerName: 'Address',
-			width: 400,
+			flex: 1,
+			minWidth: 200,
+			cellClassName: 'wrapText',
 		},
 		{
 			field: 'hobbies',
 			headerName: 'Hobbies',
-			flex: 2,
-			minWidth: 400,
+			flex: 1,
+			minWidth: 180,
+			cellClassName: 'wrapText',
 		},
 		{
 			field: 'fullName',
@@ -57,8 +61,7 @@ export const getColumns = (deleteButtonHandler: (selectedUserIds: string[]) => v
 		{
 			field: 'action',
 			headerName: 'Action buttons',
-			flex: 1,
-			minWidth: 300,
+			minWidth: 250,
 			renderCell: (params: GridRenderCellParams): ReactNode => {
 				return (
 					<ActionButtonsGroup
