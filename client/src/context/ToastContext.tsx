@@ -1,55 +1,52 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, ReactNode } from 'react';
 import { AlertColor } from '@mui/material';
-import { restoreUsers } from '../services/http-service';
 
 interface ToastContextType {
-	toastOpen: boolean;
-	alert: { alertType: AlertColor; alertText: string };
-	toggleToast: () => void;
-	setAlert: React.Dispatch<
-		React.SetStateAction<{ alertType: AlertColor; alertText: string }>
-	>;
-	restoreUserHandler: () => void;
-	setDeletedUserId: React.Dispatch<React.SetStateAction<string>>;
+	openToast: (alert: AlertType, deletedUserIds?: string[]) => void;
+	usersRestored: boolean;
+	setUsersRestored: (restored: boolean) => void
 }
 
+export interface AlertType {
+	color: AlertColor;
+	text: string;
+}
+
+interface Props {
+	openToast: (alert: AlertType) => void;
+	setUsersRestored: (restored: boolean) => void;
+	usersRestored: boolean;
+	setDeletedUserIds: (indicies: string[]) => void;
+	children?: ReactNode;
+}
+
+const noop = () => {};
+
 export const ToastContext = createContext<ToastContextType>({
-	toastOpen: false,
-	alert: { alertType: 'warning', alertText: 'Users have been deleted!' },
-	toggleToast: () => {},
-	setAlert: () => {},
-	restoreUserHandler: () => {},
-	setDeletedUserId: () => {},
+	openToast: noop,
+	setUsersRestored: noop,
+	usersRestored: false
 });
 
-const CtxProvider: React.FC = (props) => {
-	const [toastOpen, setToastOpen] = useState<boolean>(false);
-	const [deletedUserId, setDeletedUserId] = useState<string>('');
-	const [alert, setAlert] = useState<{
-		alertType: AlertColor;
-		alertText: string;
-	}>({ alertType: 'warning', alertText: 'Users have been deleted!' });
+const CtxProvider: React.FC<Props> = ({openToast, setDeletedUserIds, setUsersRestored, usersRestored, children}: Props) => {
 
-	const toggleToast = (): void => {
-		setToastOpen(!toastOpen);
-	};
-
-	const restoreUserHandler = () => {
-		restoreUsers();
+	const handleToastOpen = (alert: AlertType, deletedUserIds?: string[]): void => {
+		openToast(alert);
+		if (deletedUserIds) {
+			setDeletedUserIds(deletedUserIds)		
+		}
 	};
 
 	return (
 		<ToastContext.Provider
 			value={{
-				toastOpen,
-				alert,
-				toggleToast,
-				setAlert,
-				restoreUserHandler,
-				setDeletedUserId,
+				openToast: handleToastOpen,
+				setUsersRestored,
+				usersRestored
+
 			}}
 		>
-			{props.children}
+			{children}
 		</ToastContext.Provider>
 	);
 };

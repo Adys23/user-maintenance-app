@@ -38,16 +38,6 @@ export default class UserController {
         }
     }
 
-    public restoreUser(request: Request, response: Response): void {
-        try {
-            const id: string = request.params.userId;
-            this.service.restoreUser(id);
-            this.sendResponse(response, 200, 'User restored successfully');
-        } catch (e) {
-            this.sendResponse(response, 500, 'Failed to restore the user');
-        }
-    }
-
     public restoreUsers(request: Request, response: Response): void {
         try {
             const indices: string[] = request.body;

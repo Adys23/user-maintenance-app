@@ -9,18 +9,16 @@ import React, {
 	useContext,
 } from 'react';
 import Modal from '../components/Modal/Modal';
-import Toast from '../components/Toast/Toast';
 import { ToastContext } from '../context/ToastContext';
 import { User, Hobby } from '../types/types';
 import {
 	Box,
-	Button,
 	TextField,
 	Autocomplete,
 	Checkbox,
-	Stack,
+	MenuItem,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import {
@@ -29,6 +27,7 @@ import {
 	deleteSingleUser,
 	updateUser,
 } from '../services/http-service';
+import formFields from './formFields';
 import {
 	reducer,
 	initialState,
@@ -38,6 +37,7 @@ import {
 	SetUserAction,
 	RestoreUserAction,
 } from './personFormReducer';
+import FormControls from './FormControls';
 
 interface Props {
 	location: { state: { userId: string } };
@@ -50,6 +50,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const userId = location.state.userId;
+	const toastContext = useContext(ToastContext);
 
 	useEffect((): void => {
 		getHobbiesList().then((data: Hobby[] | undefined): void => {
@@ -72,8 +73,6 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 		});
 	}, [userId]);
 
-	const toastCtx = useContext(ToastContext);
-
 	const onInputValueChange =
 		(key: keyof User): ChangeEventHandler<HTMLInputElement> =>
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -85,7 +84,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 			dispatch(action);
 		};
 
-	const onSelectValueChange =
+	const onOptionValueChange =
 		(key: keyof User) =>
 		(event: SyntheticEvent, value: Hobby[]): void => {
 			const action: UpdateUserAction = {
@@ -103,13 +102,11 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 
 	const deleteUserHandler = (): void => {
 		deleteSingleUser(state.user.id);
-		toastCtx.setDeletedUserId(state.user.id);
 		toggleModal();
-		toastCtx.setAlert({
-			alertType: 'warning',
-			alertText: 'User has been deleted!',
-		});
-		toastCtx.toggleToast();
+		toastContext.openToast(
+			{ color: 'warning', text: 'User has been deleted!' },
+			[state.user.id]
+		);
 	};
 
 	const updateUserHandler = (): void => {
@@ -136,78 +133,28 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 		setModalOpen(!modalOpen);
 	};
 
+	const fieldsList = formFields.map((item) => {
+		const value: string | number | Hobby[] = state.user[item.name];
+		const error: boolean = item.errorCondition
+			? item.errorCondition(value)
+			: false;
+		return (
+			<TextField
+				id={item.name}
+				label={item.label}
+				error={error}
+				value={value}
+				type={item.type}
+				onChange={onInputValueChange(item.name)}
+				{...(item.required ? { required: true } : {})}
+			/>
+		);
+	});
+
 	return (
 		<>
-			<Box
-				component='form'
-				sx={{
-					'& .MuiTextField-root': { m: 1, width: '30ch' },
-				}}
-				autoComplete='off'
-			>
-				<TextField
-					required
-					id='name'
-					label='First Name'
-					value={state.user.name}
-					onChange={onInputValueChange('name')}
-					error={!state.user.name.length}
-				/>
-				<TextField
-					required
-					id='lastName'
-					label='Last Name'
-					value={state.user.lastName}
-					onChange={onInputValueChange('lastName')}
-					error={!state.user.lastName.length}
-				/>
-				<TextField
-					id='gender'
-					label='Gender'
-					value={state.user.gender}
-					onChange={onInputValueChange('gender')}
-				/>
-				<TextField
-					id='dateOfBirth'
-					label='Birth date'
-					type='date'
-					value={state.user.dateOfBirth}
-					onChange={onInputValueChange('dateOfBirth')}
-					sx={{ width: 220 }}
-					InputLabelProps={{
-						shrink: true,
-					}}
-				/>
-				<TextField
-					id='age'
-					label='Age'
-					type='number'
-					value={state.user.age}
-					onChange={onInputValueChange('age')}
-					required
-					error={state.user.age < 0}
-				/>
-				<TextField
-					required
-					id='email'
-					label='E-mail Address'
-					type='email'
-					value={state.user.email}
-					onChange={onInputValueChange('email')}
-					error={!state.user.email.length}
-				/>
-				<TextField
-					id='phoneNumber'
-					label='Phone number'
-					value={state.user.phoneNumber}
-					onChange={onInputValueChange('phoneNumber')}
-				/>
-				<TextField
-					id='address'
-					label='Address'
-					value={state.user.address}
-					onChange={onInputValueChange('address')}
-				/>
+			<Box component='form' autoComplete='off'>
+				{fieldsList}
 				<Autocomplete
 					multiple
 					id='hobbies'
@@ -240,29 +187,28 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 					)}
 					defaultValue={state.user.hobbies}
 					value={state.user.hobbies}
-					onChange={onSelectValueChange('hobbies')}
+					onChange={onOptionValueChange('hobbies')}
 				/>
-			</Box>
-			<Stack spacing={1} direction='row'>
-				<Button
-					disabled={!isValid()}
-					variant='contained'
-					onClick={updateUserHandler}
-					component={Link}
-					to={'/'}
+				<TextField
+					id='gender'
+					select
+					label='Gender'
+					value={state.user.gender}
+					onChange={onInputValueChange('gender')}
 				>
-					Save changes
-				</Button>
-				<Button variant='contained' onClick={toggleModal}>
-					Delete user
-				</Button>
-				<Button variant='contained' onClick={cancelChangesHandler}>
-					Cancel changes
-				</Button>
-				<Button variant='contained' component={Link} to={'/'}>
-					Back to list
-				</Button>
-			</Stack>
+					<MenuItem value=''>
+						<em>Not provided</em>
+					</MenuItem>
+					<MenuItem value={'male'}>Male</MenuItem>
+					<MenuItem value={'female'}>Female</MenuItem>
+				</TextField>
+			</Box>
+			<FormControls
+				isValid={isValid}
+				cancelChangesHandler={cancelChangesHandler}
+				toggleModal={toggleModal}
+				updateUserHandler={updateUserHandler}
+			/>
 			<Modal
 				open={modalOpen}
 				onConfirm={deleteUserHandler}
@@ -270,13 +216,6 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 				title='Delete user?'
 				text={`Are you sure you want to delete user: ${state.user.name} ${state.user.lastName}?`}
 				navigateTo='/'
-			/>
-			<Toast
-				open={toastCtx.toastOpen}
-				closeHandler={toastCtx.toggleToast}
-				actionHandler={toastCtx.restoreUserHandler}
-				alertType={toastCtx.alert.alertType}
-				text={toastCtx.alert.alertText}
 			/>
 		</>
 	);

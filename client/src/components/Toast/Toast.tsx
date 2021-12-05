@@ -3,6 +3,8 @@ import { Snackbar, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MuiAlert, { AlertProps, AlertColor } from '@mui/material/Alert';
 
+const WAIT_TO_CLOSE: number = 4000;
+
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 	props,
 	ref
@@ -12,10 +14,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 interface Props {
 	open: boolean;
-	text: string;
-	alertType: AlertColor;
+	text?: string;
+	alertType?: AlertColor;
 	closeHandler: () => void;
 	actionHandler: () => void;
+	handleExited: () => void;
 }
 
 const Toast: React.FC<Props> = ({
@@ -24,9 +27,12 @@ const Toast: React.FC<Props> = ({
 	alertType,
 	closeHandler,
 	actionHandler,
+	handleExited
 }: Props) => {
+
+
 	return (
-		<Snackbar open={open} onClose={closeHandler}>
+		<Snackbar open={open} onClose={closeHandler} TransitionProps={{ onExited: handleExited }} autoHideDuration={WAIT_TO_CLOSE}>
 			<Alert
 				onClose={closeHandler}
 				severity={alertType}

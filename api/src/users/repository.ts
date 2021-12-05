@@ -24,10 +24,6 @@ export class UserRepository {
         this.collection.findAndUpdate({'id': {'$in': indices}}, this.deleteFunc);
     }
 
-    public restoreUser(id: string): void {
-        this.collection.findAndUpdate((user: UserEntity) => user.id === id, this.restore);
-    }
-
     public restoreUsers(indices: string[]): void {
         this.collection.findAndUpdate({'id': {'$in': indices}}, this.restore);
     }

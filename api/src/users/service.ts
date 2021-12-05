@@ -49,10 +49,6 @@ export default class UserService {
         this.userRepository.deleteUsers(indices);
     }
 
-    public restoreUser(id: string): void {
-        this.userRepository.restoreUser(id);
-    }
-
     public restoreUsers(indices: string[]): void {
         this.userRepository.restoreUsers(indices);
     }

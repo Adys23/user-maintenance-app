@@ -1,24 +1,18 @@
 import { DataGrid, GridSelectionModel } from '@mui/x-data-grid';
 import { Button } from '@mui/material';
 import { useEffect, useState, useContext } from 'react';
-import {
-	getUsersList,
-	deleteUsers,
-	restoreUsers,
-} from '../services/http-service';
+import { getUsersList, deleteUsers } from '../services/http-service';
 import { Hobby, User, TableUser } from '../types/types';
 import getColumns from './tableColumns';
 import Modal from '../components/Modal/Modal';
-import Toast from '../components/Toast/Toast';
 import { ToastContext } from '../context/ToastContext';
 
 const PersonsTable: React.FC = () => {
 	const [usersList, setUsersList] = useState<TableUser[]>([]);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-	const [deletedUsers, setDeletedUsers] = useState<TableUser[]>([]);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-	const toastCtx = useContext(ToastContext);
+	const toastContext = useContext(ToastContext);
 
 	useEffect(() => {
 		getUsersList().then((data: User[] | undefined): void => {
@@ -32,9 +26,10 @@ const PersonsTable: React.FC = () => {
 					}
 				);
 				setUsersList(tableUsersList);
+				toastContext.setUsersRestored(false);
 			}
 		});
-	}, []);
+	}, [toastContext, toastContext.usersRestored]);
 
 	const stringifyHobbies = (hobbies: Hobby[]): string => {
 		const hobbiesString: string = hobbies
@@ -46,7 +41,8 @@ const PersonsTable: React.FC = () => {
 		return hobbiesString;
 	};
 
-	const toggleModal = (): void => setModalOpen(!modalOpen);
+	const closeModal = (): void => setModalOpen(false);
+	const openModal = (): void => setModalOpen(true);
 
 	const deleteUsersHandler = (): void => {
 		deleteUsers(selectedUsers)
@@ -58,28 +54,26 @@ const PersonsTable: React.FC = () => {
 				const usersForDeletion: TableUser[] = usersList.filter(
 					(item: TableUser) => deletedUserIdsSet.has(item.id)
 				);
-				setDeletedUsers(usersForDeletion);
 				setUsersList(updatedUsersList);
-				toggleModal();
+				closeModal();
 				if (usersForDeletion.length === 1) {
-					toastCtx.setAlert({
-						alertType: 'warning',
-						alertText: 'User has been deleted!',
-					});
+					toastContext.openToast(
+						{ color: 'warning', text: 'User has been deleted!' },
+						selectedUsers
+					);
 				} else {
-					toastCtx.setAlert({
-						alertType: 'warning',
-						alertText: 'Users have been deleted!',
-					});
+					toastContext.openToast(
+						{ color: 'warning', text: 'Users have been deleted!' },
+						selectedUsers
+					);
 				}
-				toastCtx.toggleToast();
 			})
 			.catch((e) => console.error(e));
 	};
 
 	const userRowDeleteHandler = (selectedUserIds: string[]): void => {
 		setSelectedUsers(selectedUserIds);
-		toggleModal();
+		openModal();
 	};
 
 	const onSelectionChange = (selectionModel: GridSelectionModel): void => {
@@ -97,27 +91,13 @@ const PersonsTable: React.FC = () => {
 			.slice(0, -2);
 	};
 
-	const restoreUsersHandler = (): void => {
-		restoreUsers()
-			.then(() => {
-				const updatedUsersList: TableUser[] = [...usersList, ...deletedUsers];
-				setUsersList(updatedUsersList);
-				setDeletedUsers([]);
-				toastCtx.setAlert({
-					alertType: 'success',
-					alertText: 'Users have been restored!',
-				});
-			})
-			.catch((e) => console.error(e));
-	};
-
 	const columns = getColumns(userRowDeleteHandler);
 
 	return (
-		<div style={{ height: 500, width: '100%' }}>
+		<div style={{ height: 650, width: '100%' }}>
 			<Button
 				variant='contained'
-				onClick={toggleModal}
+				onClick={openModal}
 				disabled={selectedUsers.length ? false : true}
 			>
 				Delete
@@ -141,17 +121,10 @@ const PersonsTable: React.FC = () => {
 			<Modal
 				open={modalOpen}
 				onConfirm={deleteUsersHandler}
-				onCancel={toggleModal}
+				onCancel={closeModal}
 				title='Delete user?'
 				text={`Are you sure you want to delete users: ${getSelectedUserNames()}?`}
 				navigateTo='/'
-			/>
-			<Toast
-				open={toastCtx.toastOpen}
-				closeHandler={toastCtx.toggleToast}
-				actionHandler={restoreUsersHandler}
-				alertType={toastCtx.alert.alertType}
-				text={toastCtx.alert.alertText}
 			/>
 		</div>
 	);

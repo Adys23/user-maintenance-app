@@ -28,7 +28,6 @@ app.get('/user/:userId', userController.getUser.bind(userController));
 app.delete('/user/:userId', userController.deleteUser.bind(userController));
 app.delete('/user', userController.deleteUsers.bind(userController))
 
-app.post('/user/restore/:userId', userController.restoreUser.bind(userController));
 app.post('/user/restore', userController.restoreUsers.bind(userController))
 
 app.post('/user/:userId', userController.editUser.bind(userController));

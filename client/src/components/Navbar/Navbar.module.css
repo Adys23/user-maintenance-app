@@ -5,14 +5,16 @@
 	justify-content: space-between;
 }
 
-.navbar div {
+.navbar a {
 	display: flex;
+	text-decoration: none;
+	color: black;
 }
 .navbar h1 {
 	margin: 0px;
 }
 
-.navbar img {
-	max-height: 100%;
+a img {
+	max-height: 40px;
 	max-width: 100%;
 }
