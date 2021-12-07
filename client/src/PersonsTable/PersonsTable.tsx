@@ -56,17 +56,16 @@ const PersonsTable: React.FC = () => {
 				);
 				setUsersList(updatedUsersList);
 				closeModal();
-				if (usersForDeletion.length === 1) {
-					toastContext.openToast(
-						{ color: 'warning', text: 'User has been deleted!' },
-						selectedUsers
-					);
-				} else {
-					toastContext.openToast(
-						{ color: 'warning', text: 'Users have been deleted!' },
-						selectedUsers
-					);
-				}
+
+				toastContext.openToast(
+					{
+						color: 'warning',
+						...(usersForDeletion.length > 1
+							? { text: 'Users have been deleted' }
+							: { text: 'User has been deleted' }),
+					},
+					selectedUsers
+				);
 			})
 			.catch((e) => console.error(e));
 	};
@@ -97,10 +96,11 @@ const PersonsTable: React.FC = () => {
 		<div style={{ height: 650, width: '100%' }}>
 			<Button
 				variant='contained'
+				color='error'
 				onClick={openModal}
 				disabled={selectedUsers.length ? false : true}
 			>
-				Delete
+				Delete selected users
 			</Button>
 			<DataGrid
 				rows={usersList}

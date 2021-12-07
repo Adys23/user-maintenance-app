@@ -15,7 +15,7 @@ const ActionButtonsGroup: React.FC<any> = ({ userId, deleteUser }: Props) => {
 	};
 
 	return (
-		<ButtonGroup variant='contained' aria-label='outlined primary button group'>
+		<ButtonGroup variant='outlined' aria-label='outlined primary button group'>
 			<Button
 				startIcon={<Info />}
 				component={Link}
@@ -24,7 +24,12 @@ const ActionButtonsGroup: React.FC<any> = ({ userId, deleteUser }: Props) => {
 				Details
 			</Button>
 
-			<Button startIcon={<DeleteIcon />} onClick={deleteUserHandler}>
+			<Button
+				startIcon={<DeleteIcon />}
+				onClick={deleteUserHandler}
+				variant='outlined'
+				color='error'
+			>
 				Delete
 			</Button>
 		</ButtonGroup>

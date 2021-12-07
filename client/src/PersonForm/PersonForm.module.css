@@ -1,0 +1,15 @@
+.box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.formFields {
+	margin: 8px !important;
+	width: 320px;
+}
+
+.hobbiesSelector {
+	margin: 8px;
+	width: 320px;
+}

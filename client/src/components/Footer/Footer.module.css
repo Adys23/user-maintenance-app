@@ -1,4 +1,8 @@
 .footer {
+	font-size: small;
 	margin-top: 2rem;
-	justify-content: space-around;
+}
+
+.footer p {
+	text-align: right;
 }

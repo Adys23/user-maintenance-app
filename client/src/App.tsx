@@ -21,12 +21,10 @@ const App: FC = () => {
 
 	useEffect((): void => {
 		if (snackPack.length && !alert) {
-			// Set a new snack when we don't have an active one
 			setAlert({ ...snackPack[0] });
 			setSnackPack((prev) => prev.slice(1));
 			setToastOpen(true);
 		} else if (snackPack.length && alert && toastOpen) {
-			// Close an active snack when a new one is added
 			setToastOpen(false);
 		}
 	}, [snackPack, alert, toastOpen]);

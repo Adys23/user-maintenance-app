@@ -8,6 +8,7 @@ import React, {
 	useState,
 	useContext,
 } from 'react';
+import classes from './PersonForm.module.css';
 import Modal from '../components/Modal/Modal';
 import { ToastContext } from '../context/ToastContext';
 import { User, Hobby } from '../types/types';
@@ -147,18 +148,20 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 				type={item.type}
 				onChange={onInputValueChange(item.name)}
 				{...(item.required ? { required: true } : {})}
+				className={classes.formFields}
 			/>
 		);
 	});
 
 	return (
 		<>
-			<Box component='form' autoComplete='off'>
+			<Box component='form' autoComplete='off' className={classes.box}>
 				{fieldsList}
 				<Autocomplete
 					multiple
 					id='hobbies'
 					options={[...state.hobbies]}
+					className={classes.hobbiesSelector}
 					isOptionEqualToValue={(option: Hobby, value: Hobby): boolean =>
 						option.id === value.id
 					}
@@ -175,7 +178,6 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 							{option.name}
 						</li>
 					)}
-					style={{ width: 500 }}
 					renderInput={(params) => (
 						<TextField
 							{...params}
@@ -194,6 +196,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 					select
 					label='Gender'
 					value={state.user.gender}
+					className={classes.formFields}
 					onChange={onInputValueChange('gender')}
 				>
 					<MenuItem value=''>
