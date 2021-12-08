@@ -66,6 +66,7 @@ const PersonsTable: React.FC = () => {
 					},
 					selectedUsers
 				);
+				setSelectedUsers([]);
 			})
 			.catch((e) => console.error(e));
 	};
