@@ -104,7 +104,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	const deleteUserHandler = (): void => {
 		deleteSingleUser(state.user.id);
 		toggleModal();
-		toastContext.openToast(
+		toastContext.openToastHandler(
 			{ color: 'warning', text: 'User has been deleted!' },
 			[state.user.id]
 		);

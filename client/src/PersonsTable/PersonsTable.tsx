@@ -57,7 +57,7 @@ const PersonsTable: React.FC = () => {
 				setUsersList(updatedUsersList);
 				closeModal();
 
-				toastContext.openToast(
+				toastContext.openToastHandler(
 					{
 						color: 'warning',
 						...(usersForDeletion.length > 1
