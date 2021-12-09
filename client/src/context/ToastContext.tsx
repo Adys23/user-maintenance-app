@@ -11,7 +11,7 @@ import { AlertColor } from '@mui/material';
 interface ToastContextType {
 	toastOpen: boolean;
 	openToastHandler: (alert: AlertType, deletedIds?: string[]) => void;
-	handleExited: () => void;
+	exitToastHandler: () => void;
 	restoreUsersHandler: () => void;
 	closeToastHandler: () => void;
 	alert: AlertType | undefined;
@@ -29,7 +29,7 @@ const noop = () => {};
 export const ToastContext = createContext<ToastContextType>({
 	toastOpen: false,
 	openToastHandler: noop,
-	handleExited: noop,
+	exitToastHandler: noop,
 	restoreUsersHandler: noop,
 	closeToastHandler: noop,
 	alert: { color: 'warning', text: 'Users have been deleted!' },
@@ -81,7 +81,7 @@ const ContextProvider: React.FC = (props) => {
 		setSnackPack((prev) => [...prev, alert]);
 	};
 
-	const handleExited = (): void => {
+	const exitToastHandler = (): void => {
 		setAlert(undefined);
 	};
 
@@ -103,7 +103,7 @@ const ContextProvider: React.FC = (props) => {
 				alert,
 				openToastHandler,
 				closeToastHandler,
-				handleExited,
+				exitToastHandler,
 				restoreUsersHandler,
 				usersRestored,
 				setUsersRestored,

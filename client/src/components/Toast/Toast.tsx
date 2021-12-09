@@ -16,7 +16,7 @@ interface Props {
 	alertType?: AlertColor;
 	closeHandler: () => void;
 	actionHandler: () => void;
-	handleExited: () => void;
+	exitToastHandler: () => void;
 }
 
 const Toast: React.FC<Props> = ({
@@ -25,13 +25,13 @@ const Toast: React.FC<Props> = ({
 	alertType,
 	closeHandler,
 	actionHandler,
-	handleExited,
+	exitToastHandler,
 }: Props) => {
 	return (
 		<Snackbar
 			open={open}
 			onClose={closeHandler}
-			TransitionProps={{ onExited: handleExited }}
+			TransitionProps={{ onExited: exitToastHandler }}
 		>
 			<Alert
 				onClose={closeHandler}

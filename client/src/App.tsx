@@ -22,7 +22,7 @@ const App: FC = () => {
 				open={toastContext.toastOpen}
 				closeHandler={toastContext.closeToastHandler}
 				actionHandler={toastContext.restoreUsersHandler}
-				handleExited={toastContext.handleExited}
+				exitToastHandler={toastContext.exitToastHandler}
 				alertType={toastContext.alert?.color}
 				text={toastContext.alert?.text}
 			/>
