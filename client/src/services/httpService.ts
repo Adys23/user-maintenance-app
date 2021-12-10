@@ -1,7 +1,7 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { User, Hobby } from '../types/types';
 
-const axiosInstance = axios.create({
+const axiosInstance: AxiosInstance = axios.create({
 	baseURL: 'http://localhost:8080',
 	timeout: 1000,
 });
@@ -24,7 +24,7 @@ export const getHobbiesList = async (): Promise<Hobby[] | undefined> => {
 	}
 };
 
-export const getSingleUser = async (
+export const getUser = async (
 	userId: string
 ): Promise<User | undefined> => {
 	try {
@@ -45,7 +45,7 @@ export const updateUser = async (user: User): Promise<void | undefined> => {
 	}
 };
 
-export const deleteSingleUser = async (
+export const deleteUser = async (
 	userId: string
 ): Promise<boolean | undefined> => {
 	try {

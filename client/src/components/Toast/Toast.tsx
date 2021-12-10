@@ -26,38 +26,36 @@ const Toast: React.FC<Props> = ({
 	closeHandler,
 	actionHandler,
 	exitToastHandler,
-}: Props) => {
-	return (
-		<Snackbar
-			open={open}
+}: Props) => (
+	<Snackbar
+		open={open}
+		onClose={closeHandler}
+		TransitionProps={{ onExited: exitToastHandler }}
+	>
+		<Alert
 			onClose={closeHandler}
-			TransitionProps={{ onExited: exitToastHandler }}
+			severity={alertType}
+			action={
+				<>
+					{alertType === 'warning' && (
+						<Button color='inherit' size='small' onClick={actionHandler}>
+							UNDO
+						</Button>
+					)}
+					<IconButton
+						aria-label='close'
+						color='inherit'
+						size='small'
+						onClick={closeHandler}
+					>
+						<CloseIcon fontSize='inherit' />
+					</IconButton>
+				</>
+			}
 		>
-			<Alert
-				onClose={closeHandler}
-				severity={alertType}
-				action={
-					<>
-						{alertType === 'warning' && (
-							<Button color='inherit' size='small' onClick={actionHandler}>
-								UNDO
-							</Button>
-						)}
-						<IconButton
-							aria-label='close'
-							color='inherit'
-							size='small'
-							onClick={closeHandler}
-						>
-							<CloseIcon fontSize='inherit' />
-						</IconButton>
-					</>
-				}
-			>
-				{text}
-			</Alert>
-		</Snackbar>
-	);
-};
+			{text}
+		</Alert>
+	</Snackbar>
+);
 
 export default Toast;

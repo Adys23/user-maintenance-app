@@ -1,6 +1,7 @@
 import ActionButtonsGroup from './ActionButtonsGroup';
 import { GridColumns, GridRenderCellParams } from '@mui/x-data-grid';
 import { ReactNode } from 'react';
+import classes from './tableColumns.module.css';
 
 export const getColumns = (
 	deleteButtonHandler: (selectedUserIds: string[]) => void
@@ -38,14 +39,14 @@ export const getColumns = (
 			headerName: 'Address',
 			flex: 1,
 			minWidth: 200,
-			cellClassName: 'wrapText',
+			cellClassName: classes.wrapText,
 		},
 		{
 			field: 'hobbies',
 			headerName: 'Hobbies',
 			flex: 1,
 			minWidth: 180,
-			cellClassName: 'wrapText',
+			cellClassName: classes.wrapText,
 		},
 		{
 			field: 'fullName',
@@ -65,7 +66,7 @@ export const getColumns = (
 			renderCell: (params: GridRenderCellParams): ReactNode => {
 				return (
 					<ActionButtonsGroup
-						userId={params.id}
+						userId={`${params.id}`}
 						deleteUser={deleteButtonHandler}
 					/>
 				);

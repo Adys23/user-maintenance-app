@@ -1,14 +1,16 @@
 import React, {
+	Context,
 	createContext,
 	Dispatch,
+	ReactNode,
 	SetStateAction,
 	useEffect,
 	useState,
 } from 'react';
-import { restoreUsers } from '../services/http-service';
+import { restoreUsers } from '../services/httpService';
 import { AlertColor } from '@mui/material';
 
-interface ToastContextType {
+export interface ToastContext {
 	toastOpen: boolean;
 	openToastHandler: (alert: AlertType, deletedIds?: string[]) => void;
 	exitToastHandler: () => void;
@@ -24,9 +26,9 @@ export interface AlertType {
 	text: string;
 }
 
-const noop = () => {};
+const noop = (): void => {};
 
-export const ToastContext = createContext<ToastContextType>({
+export const toastContext: Context<ToastContext> = createContext<ToastContext>({
 	toastOpen: false,
 	openToastHandler: noop,
 	exitToastHandler: noop,
@@ -37,7 +39,7 @@ export const ToastContext = createContext<ToastContextType>({
 	setUsersRestored: noop,
 });
 
-const ContextProvider: React.FC = (props) => {
+const ContextProvider: React.FC = (props: {children?: ReactNode}) => {
 	const [toastOpen, setToastOpen] = useState<boolean>(false);
 	const [alert, setAlert] = useState<AlertType | undefined>({
 		color: 'warning',
@@ -60,19 +62,19 @@ const ContextProvider: React.FC = (props) => {
 
 	useEffect((): void => {
 		toastOpen &&
-			setTimeout(() => {
+			setTimeout(():void => {
 				setToastOpen(false);
 			}, 5000);
 	});
 
 	const restoreUsersHandler = (): void => {
 		restoreUsers(deletedUserIds)
-			.then(() => {
+			.then(():void => {
 				setAlert({ color: 'success', text: 'User restored' });
 				setToastOpen(true);
 				setUsersRestored(true);
 			})
-			.catch((e) => console.error(e));
+			.catch((e):void => console.error(e));
 	};
 
 	const openToast = (alert: AlertType): void => {
@@ -97,7 +99,7 @@ const ContextProvider: React.FC = (props) => {
 	};
 
 	return (
-		<ToastContext.Provider
+		<toastContext.Provider
 			value={{
 				toastOpen,
 				alert,
@@ -110,7 +112,7 @@ const ContextProvider: React.FC = (props) => {
 			}}
 		>
 			{props.children}
-		</ToastContext.Provider>
+		</toastContext.Provider>
 	);
 };
 

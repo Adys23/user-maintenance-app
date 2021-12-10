@@ -5,10 +5,10 @@ import PersonForm from './PersonForm/PersonForm';
 import PersonsTable from './PersonsTable/PersonsTable';
 import { Route, Switch } from 'react-router-dom';
 import Toast from './components/Toast/Toast';
-import { ToastContext } from './context/ToastContext';
+import { ToastContext, toastContext } from './context/ToastContext';
 
 const App: FC = () => {
-	const toastContext = useContext(ToastContext);
+	const toastCtx: ToastContext = useContext(toastContext);
 
 	return (
 		<>
@@ -19,12 +19,12 @@ const App: FC = () => {
 			</Switch>
 			<Footer />
 			<Toast
-				open={toastContext.toastOpen}
-				closeHandler={toastContext.closeToastHandler}
-				actionHandler={toastContext.restoreUsersHandler}
-				exitToastHandler={toastContext.exitToastHandler}
-				alertType={toastContext.alert?.color}
-				text={toastContext.alert?.text}
+				open={toastCtx.toastOpen}
+				closeHandler={toastCtx.closeToastHandler}
+				actionHandler={toastCtx.restoreUsersHandler}
+				exitToastHandler={toastCtx.exitToastHandler}
+				alertType={toastCtx.alert?.color}
+				text={toastCtx.alert?.text}
 			/>
 		</>
 	);

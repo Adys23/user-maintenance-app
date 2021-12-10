@@ -10,24 +10,15 @@ import React, {
 } from 'react';
 import classes from './PersonForm.module.css';
 import Modal from '../components/Modal/Modal';
-import { ToastContext } from '../context/ToastContext';
+import { ToastContext, toastContext } from '../context/ToastContext';
 import { User, Hobby } from '../types/types';
+import { Box, TextField, MenuItem } from '@mui/material';
 import {
-	Box,
-	TextField,
-	Autocomplete,
-	Checkbox,
-	MenuItem,
-} from '@mui/material';
-
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import {
-	getSingleUser,
+	getUser,
 	getHobbiesList,
-	deleteSingleUser,
+	deleteUser,
 	updateUser,
-} from '../services/http-service';
+} from '../services/httpService';
 import formFields from './formFields';
 import {
 	reducer,
@@ -39,31 +30,32 @@ import {
 	RestoreUserAction,
 } from './personFormReducer';
 import FormControls from './FormControls';
+import AutocompleteField from './AutocompleteField';
 
 interface Props {
 	location: { state: { userId: string } };
 }
 
-const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
-const checkedIcon = <CheckBoxIcon fontSize='small' />;
-
 const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
-	const userId = location.state.userId;
-	const toastContext = useContext(ToastContext);
+	const userId: string = location.state.userId;
+	const toastCtx: ToastContext = useContext<ToastContext>(toastContext);
 
 	useEffect((): void => {
 		getHobbiesList().then((data: Hobby[] | undefined): void => {
 			if (data) {
-				const action: SetHobbiesAction = { type: ActionType.SET_HOBBIES, data };
+				const action: SetHobbiesAction = {
+					type: ActionType.SET_HOBBIES,
+					data,
+				};
 				dispatch(action);
 			}
 		});
 	}, []);
 
 	useEffect((): void => {
-		getSingleUser(userId).then((data: User | undefined): void => {
+		getUser(userId).then((data: User | undefined): void => {
 			if (data) {
 				const action: SetUserAction = {
 					type: ActionType.INITIALIZE_USER,
@@ -102,9 +94,9 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 	};
 
 	const deleteUserHandler = (): void => {
-		deleteSingleUser(state.user.id);
+		deleteUser(state.user.id);
 		toggleModal();
-		toastContext.openToastHandler(
+		toastCtx.openToastHandler(
 			{ color: 'warning', text: 'User has been deleted!' },
 			[state.user.id]
 		);
@@ -114,7 +106,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 		updateUser(state.user);
 	};
 
-	const isValid = useCallback(
+	const isValid: () => boolean = useCallback(
 		(): boolean =>
 			!!state.user.name.length &&
 			!!state.user.lastName.length &&
@@ -141,6 +133,7 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 			: false;
 		return (
 			<TextField
+				key={item.name}
 				id={item.name}
 				label={item.label}
 				error={error}
@@ -157,39 +150,13 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 		<>
 			<Box component='form' autoComplete='off' className={classes.box}>
 				{fieldsList}
-				<Autocomplete
-					multiple
+				<AutocompleteField
 					id='hobbies'
-					options={[...state.hobbies]}
-					className={classes.hobbiesSelector}
-					isOptionEqualToValue={(option: Hobby, value: Hobby): boolean =>
-						option.id === value.id
-					}
-					disableCloseOnSelect
-					getOptionLabel={(option) => option.name}
-					renderOption={(props, option, { selected }) => (
-						<li {...props} key={option.id}>
-							<Checkbox
-								icon={icon}
-								checkedIcon={checkedIcon}
-								style={{ marginRight: 8 }}
-								checked={selected}
-							/>
-							{option.name}
-						</li>
-					)}
-					renderInput={(params) => (
-						<TextField
-							{...params}
-							required
-							label='Hobbies'
-							placeholder={state.user.hobbies.length ? '' : 'Select Hobbies'}
-							error={!state.user.hobbies.length}
-						/>
-					)}
+					label='Hobbies'
+					placeholder='Select Hobbies'
 					defaultValue={state.user.hobbies}
-					value={state.user.hobbies}
-					onChange={onOptionValueChange('hobbies')}
+					options={state.hobbies}
+					onValueChange={onOptionValueChange}
 				/>
 				<TextField
 					id='gender'
@@ -202,8 +169,8 @@ const PersonForm: React.FC<Props> = ({ location }: Props) => {
 					<MenuItem value=''>
 						<em>Not provided</em>
 					</MenuItem>
-					<MenuItem value={'male'}>Male</MenuItem>
-					<MenuItem value={'female'}>Female</MenuItem>
+					<MenuItem value='male'>Male</MenuItem>
+					<MenuItem value='female'>Female</MenuItem>
 				</TextField>
 			</Box>
 			<FormControls

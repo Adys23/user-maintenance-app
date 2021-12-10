@@ -1,20 +1,26 @@
-import { DataGrid, GridSelectionModel } from '@mui/x-data-grid';
+import {
+	DataGrid,
+	GridSelectionModel,
+	GridColumns,
+	MuiEvent,
+} from '@mui/x-data-grid';
 import { Button } from '@mui/material';
 import { useEffect, useState, useContext } from 'react';
-import { getUsersList, deleteUsers } from '../services/http-service';
+import { getUsersList, deleteUsers } from '../services/httpService';
 import { Hobby, User, TableUser } from '../types/types';
 import getColumns from './tableColumns';
 import Modal from '../components/Modal/Modal';
-import { ToastContext } from '../context/ToastContext';
+import { toastContext } from '../context/ToastContext';
+import classes from './PersonsTable.module.css';
 
 const PersonsTable: React.FC = () => {
 	const [usersList, setUsersList] = useState<TableUser[]>([]);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-	const toastContext = useContext(ToastContext);
+	const toastCtx = useContext(toastContext);
 
-	useEffect(() => {
+	useEffect((): void => {
 		getUsersList().then((data: User[] | undefined): void => {
 			if (data) {
 				const tableUsersList: TableUser[] = data.map(
@@ -26,49 +32,46 @@ const PersonsTable: React.FC = () => {
 					}
 				);
 				setUsersList(tableUsersList);
-				toastContext.setUsersRestored(false);
+				toastCtx.setUsersRestored(false);
 			}
 		});
-	}, [toastContext, toastContext.usersRestored]);
+	}, [toastCtx, toastCtx.usersRestored]);
 
 	const stringifyHobbies = (hobbies: Hobby[]): string => {
-		const hobbiesString: string = hobbies
-			.reduce((acc: string, value: Hobby) => {
+		return hobbies
+			.reduce<string>((acc: string, value: Hobby): string => {
 				acc += `${value.name}, `;
 				return acc;
 			}, '')
 			.slice(0, -2);
-		return hobbiesString;
 	};
 
 	const closeModal = (): void => setModalOpen(false);
 	const openModal = (): void => setModalOpen(true);
 
 	const deleteUsersHandler = (): void => {
-		deleteUsers(selectedUsers)
-			.then(() => {
-				const deletedUserIdsSet: Set<string> = new Set(selectedUsers);
-				const updatedUsersList: TableUser[] = usersList.filter(
-					(item: TableUser) => !deletedUserIdsSet.has(item.id)
-				);
-				const usersForDeletion: TableUser[] = usersList.filter(
-					(item: TableUser) => deletedUserIdsSet.has(item.id)
-				);
-				setUsersList(updatedUsersList);
-				closeModal();
+		deleteUsers(selectedUsers).then(() => {
+			const deletedUserIdsSet: Set<string> = new Set(selectedUsers);
+			const updatedUsersList: TableUser[] = usersList.filter(
+				(item: TableUser) => !deletedUserIdsSet.has(item.id)
+			);
+			const usersForDeletion: TableUser[] = usersList.filter(
+				(item: TableUser) => deletedUserIdsSet.has(item.id)
+			);
+			setUsersList(updatedUsersList);
+			closeModal();
 
-				toastContext.openToastHandler(
-					{
-						color: 'warning',
-						...(usersForDeletion.length > 1
-							? { text: 'Users have been deleted' }
-							: { text: 'User has been deleted' }),
-					},
-					selectedUsers
-				);
-				setSelectedUsers([]);
-			})
-			.catch((e) => console.error(e));
+			toastCtx.openToastHandler(
+				{
+					color: 'warning',
+					...(usersForDeletion.length > 1
+						? { text: 'Users have been deleted' }
+						: { text: 'User has been deleted' }),
+				},
+				selectedUsers
+			);
+			setSelectedUsers([]);
+		});
 	};
 
 	const userRowDeleteHandler = (selectedUserIds: string[]): void => {
@@ -91,10 +94,26 @@ const PersonsTable: React.FC = () => {
 			.slice(0, -2);
 	};
 
-	const columns = getColumns(userRowDeleteHandler);
+	const onCellClick = (
+		params: any,
+		event: MuiEvent<React.SyntheticEvent<Element, Event>>
+	): void => {
+		if (params.colDef.field === 'action') {
+			event.defaultMuiPrevented = true;
+		}
+	};
+
+	const onRowClick = (
+		params: any,
+		event: MuiEvent<React.SyntheticEvent<Element, Event>>
+	): void => {
+		event.defaultMuiPrevented = true;
+	};
+
+	const columns: GridColumns = getColumns(userRowDeleteHandler);
 
 	return (
-		<div style={{ height: 650, width: '100%' }}>
+		<div className={classes.container}>
 			<Button
 				variant='contained'
 				color='error'
@@ -109,14 +128,8 @@ const PersonsTable: React.FC = () => {
 				pageSize={10}
 				rowsPerPageOptions={[10]}
 				checkboxSelection
-				onCellClick={(params, event) => {
-					if (params.colDef.field === 'action') {
-						event.defaultMuiPrevented = true;
-					}
-				}}
-				onRowClick={(params, event) => {
-					event.defaultMuiPrevented = true;
-				}}
+				onCellClick={onCellClick}
+				onRowClick={onRowClick}
 				onSelectionModelChange={onSelectionChange}
 			/>
 			<Modal

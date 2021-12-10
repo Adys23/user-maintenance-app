@@ -4,15 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import ContextProvider from './context/ToastContext';
+import ToastContextProvider from './context/ToastContext';
 
 ReactDOM.render(
 	<React.StrictMode>
-		<ContextProvider>
+		<ToastContextProvider>
 			<BrowserRouter>
 				<App />
 			</BrowserRouter>
-		</ContextProvider>
+		</ToastContextProvider>
 	</React.StrictMode>,
 	document.getElementById('root')
 );

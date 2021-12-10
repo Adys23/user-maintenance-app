@@ -9,7 +9,7 @@ interface Props {
 	deleteUser: (userIds: string[]) => void;
 }
 
-const ActionButtonsGroup: React.FC<any> = ({ userId, deleteUser }: Props) => {
+const ActionButtonsGroup: React.FC<Props> = ({ userId, deleteUser }: Props) => {
 	const deleteUserHandler = (): void => {
 		deleteUser([userId]);
 	};
